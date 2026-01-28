@@ -1,16 +1,31 @@
 #include <iostream>
+#include "setup.h"
+#include "keygen.h"
+#include "encrypt.h"
+#include "decrypt.h"
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+    PublicParams pp;
+    MasterKey msk;
+    setup(pp, msk);
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
-    }
+    SecretKey alice;
+    keygen(alice, pp, msk, "alice");
+
+    std::vector<std::string> S = {"alice"};
+
+    Ciphertext ct;
+    element_t K;
+    encrypt(ct, pp, S, K);
+
+    element_t Ki;
+    decrypt(Ki, pp, ct, alice);
+
+    std::cout << "Session key:\n";
+    element_printf("%B\n", K);
+
+    std::cout << "Partial decrypt:\n";
+    element_printf("%B\n", Ki);
 
     return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
 }
